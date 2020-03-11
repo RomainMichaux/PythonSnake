@@ -34,15 +34,7 @@ def affichage_aire_de_jeu(hauteur, largeur, titre):
     curses.beep()
     return win
 
-
-if __name__ == "__main__":
-  affichage_titre(titre)
-  affichage_aire_de_jeu(40, 100, "SNAKE")
-  curses.napms(10000)
-  curses.endwin()
-
-
-def controle(win, key, keys = [____]):
+def controle(win, key, keys = [curses.KEY_DOWN, curses.KEY_UP, curses.KEY_LEFT, curses.KEY_RIGHT, 27]):
 	'''
 	Controles de jeu
 	paramètres :
@@ -53,21 +45,54 @@ def controle(win, key, keys = [____]):
 	  code de la touche reconnue
 	'''
 	# Sauvegarde de la dernière touche reconnue
-	old_key = curses.KEY_SAVE
+	old_key = key
 
 	# Aquisition d'un nouveau caractère depuis le clavier
-	key = win.____
+	key = win.getch()
 
 	# Si aucune touche actionnée (pas de nouveau caractère)
 	# ou pas dans la liste des touches acceptées
 	# key prend la valeur de la dernière touche connue
-	if key == ____ or key not in ____ :
-		key = ____
+	if key == "" or key not in keys :
+		key = old_key
 
 	# Raffaichissement de la fenètre
 	win.refresh()
 
 	# retourne le code la touche
-	return ____
+	return key
 
-  
+def jeu(win):
+	'''
+	Moteur du jeu
+	paramètre :
+	  win : fenètre en cours
+	retour :
+	  score à la fin du jeu
+	'''
+	key = curses.KEY_RIGHT
+	score = 0
+	snake = [[4, 10], [4, 9], [4, 8]]
+	food = [10, 20]
+	curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+	win.addch(food[0], food[1], chr(211), curses.color_pair(2))  
+	curses.init_pair(3, curses.COLOR_BLUE, curses.COLOR_YELLOW)
+	for i in range(len(snake)):
+		win.addstr(snake[i][0], snake[i][1], '*', curses.color_pair(3))
+	curses.beep()
+	while key!=27:
+		key = controle(win, key)
+	return score
+
+
+if __name__ == "__main__":
+  affichage_titre(titre)
+  curses.initscr()
+  curses.start_color()
+  window = affichage_aire_de_jeu(20, 60, 'SNAKE')
+  score = jeu(window)
+  curses.endwin()
+
+  print('\n\n\n')
+  print(f'Votre score est de : {score}')
+  print('\n\n\n')
